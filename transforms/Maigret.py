@@ -65,7 +65,7 @@ class Maigret(DiscoverableTransform):
             entity.setLinkLabel('found by username')
             entity.addDisplayInformation(content=f'{person_name} profile at {site}')
             # entity.setWeight(100)
-            entity.setIconURL('https://www.google.com/s2/favicons?domain='+url_main)
+            entity.setIconURL(f'https://www.google.com/s2/favicons?domain={url_main}')
 
             entity.addProperty('Title', 'Title', 'strict', site)
             entity.addProperty('Social Network', 'SocialNetwork', 'strict', site)
@@ -77,14 +77,11 @@ class Maigret(DiscoverableTransform):
         loop = asyncio.get_event_loop()
         results = loop.run_until_complete(maigret_search(username))
 
-        res = {}
-        for site, data in results.items():
-            if data['status'].status != QueryStatus.CLAIMED:
-                continue
-
-            res[site] = data
-
-        return res
+        return {
+            site: data
+            for site, data in results.items()
+            if data['status'].status == QueryStatus.CLAIMED
+        }
 
 
 if __name__ == '__main__':
